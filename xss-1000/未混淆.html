@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>xss 测试</title>
+</head>
+<body>
+
+
+    <center>
+        <h1> 通关要求：使用弹出Cookie</h1>
+        <form action="" method="get">
+            <input type="text" name="s">
+            <button>提交</button>
+        </form>
+        <br>
+        <div></div>
+    </center>
+
+
+
+    <script type="text/javascript">
+
+        //模拟后端处理过程，此js代码未混淆
+        document.cookie = "xss = 恭喜通关!"
+            
+        var getURLValue = new URLSearchParams(location.search);
+
+        var xss = getURLValue.get("s");
+
+
+        if(xss && xss.length <= 42){
+
+
+            if(xss.match(/<[^ ]+/mgi)){
+
+                document.querySelector("div").textContent = xss + "  中包含敏感字符，禁止提交！";
+
+            }else if(xss.match(/<[ ]+/mgi)){
+
+
+                document.querySelector("div").innerHTML = "更改中："+xss.replace(/(<[ ])+/mgi,"<");
+
+            }else{
+
+                document.querySelector("div").innerHTML = "更改中："+ xss;
+            }
+            
+
+        }else if(xss){
+
+            document.querySelector("div").innerHTML = "内容过长！";
+        }
+        
+
+
+    </script>
+</body>
+</html>

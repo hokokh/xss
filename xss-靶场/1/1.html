@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>第1关 ChaMd5-H1的XSS测试</title>
+	<style type="text/css">
+		input {
+			width:300px;
+			height: 25px;
+		}
+
+		button {
+			width: 60px;
+			height: 30px;
+		}
+	</style>
+</head>
+<body>
+<center>
+	<h2>第一关</h2>
+	xxx搜索，你想搜的这里都没有
+	<br><br>
+	<form action="" method="GET">
+		<input name="xss">
+		<button>搜索</button>
+	</form>
+</center>
+
+<script type="text/javascript" src="../index.js"></script>
+<script type="text/javascript" src="1.js"></script>
+</body>
+</html>

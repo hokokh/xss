@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>第14关 ChaMd5-H1的XSS测试</title>
+	<style type="text/css">
+		input {
+			width:300px;
+			height: 25px;
+		}
+
+		button {
+			width: 60px;
+			height: 30px;
+		}
+	</style>
+</head>
+<body>
+<center>
+	<h2>第十四关</h2>
+	<div>要求：请使用 <span style="color:red;">alert(document.cookie)</span> 弹出用户的Cookie。</div>
+	<br>
+	<form action="" method="GET">
+		<input name="xss">
+		<button>查看</button>
+	</form>
+</center>
+
+<script type="text/javascript">
+	document.cookie = "XSS_Test = This is Cookie";
+
+	var xss = new URLSearchParams(location.search);
+
+	document.write(`<br><div align="center">${xss.get('xss').slice(0,30).replace(/src/gi,"src ")}</div>`);
+</script>
+
+
+
+</body>
+</html>

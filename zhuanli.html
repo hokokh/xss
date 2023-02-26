@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>B站 - hokokh</title>
+	<style type="text/css">
+		#getNum,
+		#getValue {
+			height: 280px;
+			width: 300px;
+			resize: none;
+		}
+
+		#outPutCopyAll {
+			height: 270px;
+			resize: none;
+			width: 600px
+		}
+
+		#div1 {
+			position: relative;
+			width: 750px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<center>
+		<b>
+			先写零件名，后自动添加标号 -
+			<a href="https://space.bilibili.com/452238107" style="text-decoration: none;color: orange;"
+				target="_blank">Bug反馈</a>
+		</b>
+		<br><br>
+		<div>
+			<div>
+				<button onclick="clearData('Num')">&nbsp;清空标号&nbsp;</button>
+				&nbsp;&nbsp;&nbsp;
+				<button onclick="clearData('All')">&nbsp;清空全部&nbsp;</button>
+				&nbsp;&nbsp;&nbsp;
+				<button onclick="clearData('Imp')">&nbsp;清空简写权要&nbsp;</button>
+			</div>
+			<textarea id="getNum" onkeyup="outPutCopy()"></textarea>
+			<textarea id="getValue" onkeyup="outPutCopy()"></textarea>
+
+			<br><br>
+			<div>
+				<button onclick="copyText('Imp')">复制权要</button>
+			</div>
+
+			<textarea id="outPutCopyAll" readonly="readonly"></textarea>
+
+		</div>
+	</center>
+
+
+
+	<script type="text/javascript">
+		var areaTips1 = "这里输入标号\n\n示例：\n1、电机；2、搅拌叶片；3、底座。\n\n\n每个标号的结尾要有句号或者分号，例如上面“3、底座”的末尾要有句号或者分号！！！\n\n\n警告：\n1. 没有自动保存功能。\n2. 只识别中文的、（）；";
+		getEle("#getNum").placeholder = areaTips1;
+
+		var areaTips2 = "这里输入简写的权要\n\n语法：零件名后面要以/结尾\n\n示例：电机/ => 电机（1）"
+		getEle("#getValue").placeholder = areaTips2;
+
+		var areaTips3 = "\n\n这里输出转换后的权要，\n\n点击复制权要可以一键复制。"
+		getEle("#outPutCopyAll").placeholder = areaTips3;
+
+		function clearData(a) {
+			if (a == "Num") {
+
+				getEle("#getNum").value = "";
+				getEle("#outPutCopyAll").value = "";
+
+
+			} else if (a == "All") {
+
+				getEle("#getNum").value = "";
+				getEle("#getValue").value = "";
+				getEle("#outPutCopyAll").value = "";
+
+			} else if (a == "Imp") {
+
+				getEle("#getValue").value = "";
+				getEle("#outPutCopyAll").value = "";
+
+
+			}
+		}
+
+
+		function copyText(a) {
+			if (a == "Imp") {
+				getEle("#outPutCopyAll").select();
+				document.execCommand('copy');
+			} 
+		}
+
+
+		function outPutCopy() {
+			if (getNum()) {
+				getEle("#outPutCopyAll").value = outPut();
+			} else {
+				getEle("#outPutCopyAll").value = "";
+			}
+
+		}
+
+		function outPut() {
+
+			let getValue = getEle("#getValue", "value");
+
+			if (getNum() && getValue) {
+				for (let i = 0; i < getNum().length; i++) {
+					let reg = new RegExp("(" + getNum()[i].match(/(?<=\d+、).+/mgi)[0] + ")" + "/", "mgi");
+					getValue = getValue.replace(reg, "$1（" + getNum()[i].match(/\d+/mgi)[0] + "）");
+				}
+
+				return getValue;
+
+			} else {
+
+				return null;
+			}
+
+		}
+
+		// 1、电机；202、搅拌电机；3、搅拌轴。
+		// 所述电机/的上表面固定连接有搅拌轴/，所述电机/的一侧固定连接有搅拌电机/
+		function getNum() {
+			let isTrue = getEle("#getNum", "value").match(/\d+、[^；。]+/mgi);
+
+			if (isTrue) {
+				return isTrue.sort(function (a, b) {
+					return b.match(/(?<=\d+、).+/mgi)[0].length - a.match(/(?<=\d+、).+/mgi)[0].length;
+				});
+			} else {
+				return false;
+			}
+		}
+
+		function getEle() {
+
+			if (arguments[1]) {
+				var value = arguments[1];
+				return document.querySelector(arguments[0]).value;
+			} else {
+				return document.querySelector(arguments[0])
+			}
+
+		}
+
+	</script>
+</body>
+
+</html>

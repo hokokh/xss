@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B站 - hokokh</title>
+
+
+  <style>
+    /*s输入附图标记、简写权要 */
+    #import_num,
+    #import_power {
+      width: 300px;
+      height: 220px;
+      resize: none;
+    }
+
+    /* 错误提示框 */
+    #error_tip {
+      border: 1px solid black;
+      width: 610px;
+      height: 300px;
+      /* display: none; */
+    }
+
+    /* 输出框 */
+    #output_power,
+    #output_you,
+    #output_shi {
+      display: block;
+      width: 610px;
+      height: 110px;
+    }
+
+    a{
+      text-decoration: none;
+    }
+    a:visited{
+      color: blue;
+    }
+  </style>
+</head>
+
+<body>
+
+  <center>
+    <!-- 清除按钮 -->
+    <div>
+
+      <button onclick="clear_import('#import_num')">清除附图标记</button>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button onclick="clear_import('#import_num','#import_power')">同时清除</button>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button onclick="clear_import('#import_power')">清除简写权要</button>
+    </div>
+
+    <!-- 获取附图标记、简写的权要 -->
+    <textarea id="import_num" onkeyup="show_output()"></textarea>
+    <textarea id="import_power" onkeyup="show_output()"></textarea>
+
+    <br>
+    <!-- 错误信息提示框 -->
+    <!-- <div id="error_tip">123</div> -->
+    <br>
+
+    <!-- 复制输出内容按钮 -->
+    <div>
+      <button onclick="copy_output('#output_power')">复制权要</button>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button onclick="copy_output('#output_you')">复制优选的</button>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button onclick="copy_output('#output_shi')">复制实施列</button>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button onclick="recover_size()">恢复默认大小</button>
+      <a href="https://space.bilibili.com/452238107" target="_blank">Bug反馈</a>
+    </div>
+
+    <!-- 输出权要、优选的、实施例 -->
+    <textarea id="output_power" readonly></textarea>
+    <br>
+    <textarea id="output_you" readonly></textarea>
+    <br>
+    <textarea id="output_shi" readonly></textarea>
+
+  </center>
+
+  <script>
+    //添加提示信息
+    get_Ele("#import_num").value = "1、；2、；3、；4、；5、；6、；7、；8、；9、；10、；11、；12、；13、；14、；15、；16、；17、；18、；19、；20、；21、；22、；23、；24、；25、；26、；27、；28、；29、；30、；";
+
+    get_Ele("#import_power").placeholder = "这里输入简写的“权要”\n\n语法：\n\n （1）：电机（1）\n\n·1：所述电机（1）\n\n\n\n（1）替换的结果不加所述\n\n·1替换的结果加所述";
+
+    get_Ele("#output_power").placeholder = "1、这里输出“权要”，点击复制权要可以一键复制。\n\n2、拖动右下角由斜线组成的三角形可缩放此文本框。\n\n3、点击 恢复默认大小 可以恢复文本框的位置。";
+
+    get_Ele("#output_you").placeholder = "1、这里输出“为了使得”,点击复制优选的可以一键复制。\n\n2、自动去除了括号、数字,并添加为了使得。\n\n3、本文本框可缩放大小。";
+
+    get_Ele("#output_shi").placeholder = "1、这里输出“实施例”，点击复制权要可以一键复制。\n\n2、自动去除括号，并添加具体使用时和在本实施例中。\n\n3、本文本框可缩放大小。";
+
+
+    //函数，将结果输出到页面-------
+    function show_output() {
+      //get_power，写数字替换
+      //get_power2，写零件替换
+
+      //输出权要
+      get_Ele("#output_power").value = get_power();
+
+      // 输出优选的
+      get_Ele("#output_you").value = get_you();
+
+      //输出实施列
+      get_Ele("#output_shi").value = get_shi();
+    }
+
+    //函数，返回替换后的优选的-----
+    function get_you() {
+      let you = get_power() ? get_power() : "";
+
+      //获取专利名
+      let name = get_power().match(/(?<=1.)(.*?)(?=，包括)/mgi);
+      name = name ? name[0].replace(/[\t\s]*/mgi, "") : "1"
+      // console.log(name)
+
+      you = you.replace(/(根据权利要求.+其特征在于：)/mgi, `为了使得XXX，作为本实用新型${name}，`)
+        .replace(/其特征在于：|^(\d+\.)[\t\s]*|（\d+）/mgi, "")
+      // console.log(you)
+      return you;
+    }
+
+
+    //函数，返回替换后的实施列-----
+    function get_shi() {
+      let shi = get_power() ? get_power() : "";
+      shi = shi.replace(/(根据权利要求.+其特征在于：)/mgi, `具体使用时，。\n在本实施例中，`)
+        .replace(/其特征在于：|^(\d+\.)[\t\s]*|（|）/mgi, "")
+
+
+      return shi;
+    }
+
+    //函数，返回替换后的权要-----
+    function get_power() {
+      let power = get_Ele("#import_power", "value");
+
+      if (!get_num()) {
+        return ""
+      }
+
+
+      // （1），转换成“电机（1）”
+      power = power.replace(/（(\d+)）/mgi, (reg_1, reg_2) => {
+        return get_num()[`_a${reg_2}a_`]; //电机（1）
+      })
+
+      // ·1，转换成“所述电机（1）”
+      power = power.replace(/·(\d+)/mgi, (reg_1, reg_2) => {
+        return "所述" + get_num()[`_a${reg_2}a_`];
+      })
+      // console.log(power)
+      return power;
+    }
+
+    //函数，获取输入的附图标号，转换成对象返回--------
+    function get_num() {
+      let numObj = {};
+      let numArr = ""
+      let reg = /(\d+)、([^；。]+)([；。])/g;
+
+      numArr = get_Ele("#import_num", "value").match(reg);
+
+      if (!numArr) {
+        return ""
+      }
+
+      // 把标号替换成{"_a1a_":"电机"}
+      for (let i = 0; i < numArr.length; i++) {
+        let key = numArr[i].replace(reg, "_a$1a_");
+        let value = numArr[i].replace(reg, "$2（$1）");
+        numObj[key] = value;
+      }
+
+      // console.log(numObj[num_value]);
+      return numObj;
+    }
+
+    //函数，复制输出结果--------
+    function copy_output(id) {
+      get_Ele(id).select();
+      document.execCommand("copy");
+    }
+
+    //函数，清除用户的输入
+    function clear_import() {
+      for (let i = 0; i < arguments.length; i++) {
+        get_Ele(arguments[i]).value = null;
+      }
+
+    }
+
+
+    //恢复默认大小
+    function recover_size() {
+      let set1 = document.querySelector("#output_power");
+      set1.style.width = "610px"
+      set1.style.height = "110px"
+      let set2 = document.querySelector("#output_you");
+      set2.style.width = "610px"
+      set2.style.height = "110px"
+      let set3 = document.querySelector("#output_shi");
+      set3.style.width = "610px"
+      set3.style.height = "110px"
+    }
+
+    //函数，获取元素或值，有两个参数--------
+    function get_Ele() {
+      if (arguments[2]) {
+        return document.querySelector(arguments[0])[arguments[1]] = [arguments[1]];
+      } else if (arguments[1]) {
+        return document.querySelector(arguments[0])[arguments[1]]
+
+      } else {
+        return document.querySelector(arguments[0])
+      }
+
+    }
+  </script>
+</body>
+
+</html>

@@ -114,7 +114,7 @@
       get_Ele("#output_you").value = get_you();
 
       //输出实施列
-      get_Ele("#output_shi").value = get_shi();
+      get_Ele("#output_shi").value = get_shi()?get_shi() + "\n具体使用时，。":"";
     }
 
     //函数，返回替换后的优选的-----
@@ -137,7 +137,7 @@
     function get_shi() {
       let shi = get_power() ? get_power() : "";
       shi = shi.replace(/(根据权利要求.+其特征在于：)/mgi, `具体使用时，。\n在本实施例中，`)
-        .replace(/其特征在于：|^(\d+\.)[\t\s]*|（|）|所述/mgi, "") + "\n具体使用时，。"
+        .replace(/其特征在于：|^(\d+\.)[\t\s]*|（|）|所述/mgi, "")
 
 
       return shi;
